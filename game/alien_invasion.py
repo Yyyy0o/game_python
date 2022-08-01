@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from alien import Alien
 from bullet import Bullet
 from setting import Settings
 from ship import Ship
@@ -21,12 +22,16 @@ class AlienInvasion:
         pygame.display.set_caption(self.settings.name)
 
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
         self.ship = Ship(self)
+
+        self._crete_fleet()
 
     def run_game(self):
         while True:
             self._check_events()
             self.ship.update()
+            self._update_aliens()
             self._update_bullets()
             self._update_screen()
 
@@ -60,6 +65,8 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
+        self.aliens.draw(self.screen)
         pygame.display.flip()
 
     def _fire_bullet(self):
@@ -74,6 +81,43 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
+
+    def _crete_fleet(self):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        # alien列数
+        available_space_x = self.settings.screen_width - 2 * alien_width
+        number_columns = available_space_x // alien_width
+        # alien行数
+        available_space_y = self.settings.screen_hight - 3 * alien_height - self.ship.rect.height
+        number_rows = available_space_y // (2 * alien_height)
+
+        for row in range(number_rows):
+            for column in range(number_columns):
+                self._create_alien(column, row)
+
+    def _create_alien(self, column, row):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        alien.x = alien_width + 2 * alien_width * column
+        alien.rect.y = alien_height + 2 * alien_height * row
+        alien.rect.x = alien.x
+        self.aliens.add(alien)
+
+    def _update_aliens(self):
+        self._check_fleet_edge()
+        self.aliens.update()
+
+    def _check_fleet_edge(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edge():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.alien_drop_speed
+            alien.settings.alien_direction *= -1
 
 
 if __name__ == '__main__':
