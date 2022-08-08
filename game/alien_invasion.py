@@ -14,7 +14,7 @@ class AlienInvasion:
         pygame.init()
 
         self.settings = Settings()
-        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_hight))
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         # 设置全屏
         # self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         # self.settings.screen_hight = self.screen.get_rect().height
@@ -81,15 +81,16 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
+        groupcollide = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
     def _crete_fleet(self):
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
         # alien列数
         available_space_x = self.settings.screen_width - 2 * alien_width
-        number_columns = available_space_x // alien_width
+        number_columns = available_space_x // (2 * alien_width)
         # alien行数
-        available_space_y = self.settings.screen_hight - 3 * alien_height - self.ship.rect.height
+        available_space_y = self.settings.screen_height - 4 * alien_height - self.ship.rect.height
         number_rows = available_space_y // (2 * alien_height)
 
         for row in range(number_rows):
@@ -115,9 +116,9 @@ class AlienInvasion:
                 break
 
     def _change_fleet_direction(self):
+        self.settings.alien_direction *= -1
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.alien_drop_speed
-            alien.settings.alien_direction *= -1
 
 
 if __name__ == '__main__':
