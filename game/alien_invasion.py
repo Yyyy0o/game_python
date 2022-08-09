@@ -5,6 +5,7 @@ import pygame
 
 from alien import Alien
 from bullet import Bullet
+from button import Button
 from game_stats import GameStats
 from setting import Settings
 from ship import Ship
@@ -27,6 +28,7 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.ship = Ship(self)
+        self.button = Button(self, 'play')
 
         self._crete_fleet()
 
@@ -65,13 +67,17 @@ class AlienInvasion:
         if event.key == pygame.K_LEFT:
             self.ship.move_left = False
 
-    def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
 
         self.aliens.draw(self.screen)
+
+        if not self.stats.game_stats:
+            self.button.draw_button()
+
+    def _update_screen(self):
         pygame.display.flip()
 
     def _fire_bullet(self):
@@ -86,7 +92,9 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom < 0:
                 self.bullets.remove(bullet)
+        # 射杀alien
         groupcollide = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        # 创建fleet
         if not self.aliens:
             self.bullets.empty()
             self._crete_fleet()
