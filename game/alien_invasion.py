@@ -9,7 +9,7 @@ from button import Button
 from game_stats import GameStats
 from setting import Settings
 from ship import Ship
-from scoreboard import Scoreboard
+from game.scoreboard import Scoreboard
 
 
 class AlienInvasion:
@@ -110,6 +110,9 @@ class AlienInvasion:
             self.bullets.empty()
             self._crete_fleet()
             self.settings.increase_speed()
+            # 提高等级
+            self.stats.level += 1
+            self.sb.pre_level()
 
     def _crete_fleet(self):
         alien = Alien(self)
@@ -141,8 +144,9 @@ class AlienInvasion:
         self._check_alien_bottom()
 
     def _ship_hit(self):
-        if self.stats.ship_left > 1:
+        if self.stats.ship_left > 0:
             self.stats.ship_left -= 1
+            self.sb.pre_ship()
             self.aliens.empty()
             self.bullets.empty()
             self._crete_fleet()
@@ -185,6 +189,8 @@ class AlienInvasion:
             self._crete_fleet()
             self.ship.center_ship()
             self.sb.pre_score()
+            self.sb.pre_level()
+            self.sb.pre_ship()
 
 
 if __name__ == '__main__':

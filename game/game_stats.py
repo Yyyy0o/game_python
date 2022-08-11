@@ -6,7 +6,9 @@ class GameStats():
         self.game_stats = False
         self.score = 0
         self.high_score = 0
+        self.level = 1
 
     def reset_stats(self):
         self.ship_left = self.settings.ship_limit
         self.score = 0
+        self.level = 1
