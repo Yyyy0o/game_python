@@ -9,7 +9,7 @@ from button import Button
 from game_stats import GameStats
 from setting import Settings
 from ship import Ship
-from game.scoreboard import Scoreboard
+from scoreboard import Scoreboard
 
 
 class AlienInvasion:
